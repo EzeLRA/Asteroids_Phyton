@@ -18,4 +18,10 @@ def exitGame(key):
     if keys[pygame.K_ESCAPE]:
         key[0] = True
 
+def revive():
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_r]:
+        return True
+    else:
+        return False
     

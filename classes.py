@@ -38,7 +38,7 @@ class Bullet:
 
 
 class Asteroid:
-    def __init__(self):
+    def __init__(self,size,pos,stagePri):
         
         sides = 9
         inclination = 360 / sides
@@ -46,10 +46,15 @@ class Asteroid:
         ang = 0
         i = 0
 
+        self.stageIsPri = stagePri
+
         self.p = []
-        self.Size = random.randrange(15,30,1)
-        self.x = random.randrange(0,700,1)
-        self.y = random.randrange(0,700,1)
+        if stagePri:
+            self.Size = random.randrange(size,size+15,1)
+        else:
+            self.Size = random.randrange(size,size+5,1)
+        self.x = pos[0]
+        self.y = pos[1]
         
         for i in range(sides):
             self.p.append([self.x,self.y + random.randrange(self.Size,self.Size+deformity,2)])
@@ -99,6 +104,35 @@ class Asteroid:
         dy = coordsObjet[1] - self.y
         return (math.sqrt(dx*dx + dy*dy) < self.Size)
 
+    
+
+class Fragment:
+    def __init__(self,p1,p2,pC,ang):
+        self.pC = pC
+        self.p1 = p1
+        self.p2 = p2
+        self.angle = 3
+        self.gravity = [random.uniform(-1,1)+1,random.uniform(-1,1)+1]
+
+    def Draw(self,screen):
+        pygame.draw.line(screen,"white",self.p1,self.p2,1)
+
+    def Movements(self):
+        self.angle += 0.001
+        Rotate(self.p1,self.pC,self.angle)
+        Rotate(self.p2,self.pC,self.angle)
+        self.p1[0] -= self.gravity[0]
+        self.p1[1] -= self.gravity[1]
+        self.p2[0] -= self.gravity[0]
+        self.p2[1] -= self.gravity[1]
+        self.pC[0] -= self.gravity[0]
+        self.pC[1] -= self.gravity[1]
+
+    def escenaryLimit(self):
+        if (self.pC[1] > 750)and(self.pC[1] < -150)or(self.pC[0] > 750)and(self.pC[0] < -150):
+            return True
+        else:
+            return False
 
 
 class Ship:
@@ -191,5 +225,25 @@ class Ship:
     def Impact(self,ast):
         isTrue = ast.colission(self.p1) or ast.colission(self.p2) or ast.colission(self.p3) or ast.colission(self.p4) or ast.colission(self.p5)
         return isTrue
+    
+    def shipExplosion(self,fragments):
+        f1a = [self.Coords[0],self.Coords[1]+16]
+        f1b = [self.Coords[0],self.Coords[1]+16]
+        f2 = [self.Coords[0]-8,self.Coords[1]-10]
+        f3 = [self.Coords[0]+8,self.Coords[1]-10]
+        f4 = [self.Coords[0]+6,self.Coords[1]-4]
+        f5 = [self.Coords[0]-6,self.Coords[1]-4]
+        distMedia1 = [((f4[0]-f5[0])/2)+f5[0],((f4[1]-f5[1])/2)+f5[1]]
+        distMedia2 = [((f1a[0]-f2[0])/2)+f2[0],((f1a[1]-f2[1])/2)+f2[1]]
+        distMedia3 = [((f1b[0]-f3[0])/2)+f3[0],((f1b[1]-f3[1])/2)+f3[1]]
+
         
+        fragments.append(Fragment(f4,f5,distMedia1,self.angle[0]))
+        fragments.append(Fragment(f1a,f2,distMedia2,self.angle[0]))
+        fragments.append(Fragment(f1b,f3,distMedia3,self.angle[0]))
+
+
+        
+        
+
 
