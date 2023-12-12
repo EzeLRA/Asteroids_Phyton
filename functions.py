@@ -24,4 +24,18 @@ def revive():
         return True
     else:
         return False
+
+def restartCondition():
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_y]:
+        return True
+    else:
+        return False
+
+def pauseKey():
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_p]:
+        return True
+    else:
+        return False
     

@@ -1,8 +1,19 @@
 import random
 import pygame
 from classes import Ship,Asteroid,Bullet
-from functions import exitGame
-from functions import revive
+from functions import *
+
+
+"""
+Teclas:
+W = Avanzar
+Q = Giro Izquierda
+E = Giro Derecha
+R = Revivir
+Y = Reiniciar partida
+P = Pausa
+ESC = Salida del juego
+"""
 
 #Pygame Setup
 pygame.init()
@@ -13,7 +24,11 @@ dt = 0
 
 #Game Function Data:
 exit = [False]
+menuInicio = True
+pauseCondition = False
 fontType = pygame.font.Font("Resources/Font/pixelmix.ttf",18)
+fontType2 = pygame.font.Font("Resources/Font/pixelmix.ttf",11)
+fontType3 = pygame.font.Font("Resources/Font/pixelmix.ttf",30)
 
 
 #Player Data:
@@ -22,7 +37,7 @@ gravity = [0,0]
 player_pos = [screen.get_width() / 2, screen.get_height() / 2]
 shootButton = [False]
 Ship1 = Ship(player_pos,angle,gravity)
-ShipImpact = False
+ShipImpact = False #No se esta usando
 points = 0
 ShipLives = 3
 destroyed = False
@@ -37,8 +52,55 @@ astCant = []
 size1 = 15
 size2 = 7
 
-for i in range(15):
-    astCant.append(Asteroid(size1,[random.randrange(0,700,1),random.randrange(0,700,1)],True))
+for i in range(5):
+    Xpos1 = random.randrange(int((screen.get_width() / 2)+120),700,1)
+    Ypos1 = random.randrange(int((screen.get_height() / 2)+120),700,1)
+    Xpos2 = random.randrange(0,int((screen.get_width() / 2)-120),1)
+    Ypos2 = random.randrange(0,int((screen.get_height() / 2)-120),1)
+
+    astCant.append(Asteroid(size1,[Xpos1,Ypos1],True))
+    astCant.append(Asteroid(size1,[Xpos2,Ypos2],True))
+    astCant.append(Asteroid(size1,[Xpos2,Ypos1],True))
+    astCant.append(Asteroid(size1,[Xpos1,Ypos2],True))
+
+while menuInicio:
+    #Events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            menuInicio = False
+            running = False
+
+    exitGame(exit)
+    if exit[0] == True:
+        menuInicio = False
+        running = False
+
+    #Rehused key condition
+    if restartCondition():
+        menuInicio = False
+
+    #Screen
+    screen.fill("black")
+
+    #Asteroids
+    for i in range(len(astCant)):
+        astCant[i].Draw(screen)
+        astCant[i].Movements()
+        astCant[i].escenaryLimit()
+
+    #Title
+    title = fontType3.render("Asteroid",True,"White")
+    screen.blit(title,((screen.get_width() / 2)-85, (screen.get_height() / 2)-80))
+
+
+    #Screen Clean
+    pygame.display.flip()
+
+    #FPS
+    dt = clock.tick(60) / 1000
+
+
+
 
 
 while running:
@@ -56,6 +118,9 @@ while running:
     screen.fill("black")
 
     #Escenary
+    
+
+    #Pause condition
 
     #Ship
     if destroyed == False:
@@ -64,6 +129,7 @@ while running:
         Ship1.Draw(screen)
         Ship1.Shot(bullets,shootButton)
     
+    #Colisiones de la nave
     if astCant and (destroyed == False):
         for i in range(len(astCant)):
             if Ship1.Impact(astCant[i]): #Refinar
@@ -71,6 +137,7 @@ while running:
                 ShipLives -= 1
                 Ship1.shipExplosion(fragments)
 
+    #Desplazamiento de los fragmentos
     if fragments:
         fg = 0
         removed = False
@@ -82,6 +149,7 @@ while running:
                 removed=True
             fg += 1
 
+    #Evento de reinicio de juego
     if (destroyed == True) and revive() and ShipLives > 0:
         destroyed = False
         angle = [0]
@@ -128,21 +196,79 @@ while running:
 
             if pooped:
                 points += 1
-            
+    
+    #Recarga de asteroides
     if not(astCant):
-        for i in range(15):
-            astCant.append(Asteroid(size1,[random.randrange(0,700,1),random.randrange(0,700,1)],True))
+        for i in range(5):
+            Xpos1 = random.randrange(int((screen.get_width() / 2)+120),700,1)
+            Ypos1 = random.randrange(int((screen.get_height() / 2)+120),700,1)
+            Xpos2 = random.randrange(0,int((screen.get_width() / 2)-120),1)
+            Ypos2 = random.randrange(0,int((screen.get_height() / 2)-120),1)
 
+            astCant.append(Asteroid(size1,[Xpos1,Ypos1],True))
+            astCant.append(Asteroid(size1,[Xpos2,Ypos2],True))
+            astCant.append(Asteroid(size1,[Xpos2,Ypos1],True))
+            astCant.append(Asteroid(size1,[Xpos1,Ypos2],True))
+
+    #Estadisticas
     score = fontType.render("Points: " + str(points),True,"White")
     screen.blit(score,(20,20))
-
 
     lives = fontType.render("Lives: " + str(ShipLives),True,"White")
     screen.blit(lives,(20,45))
 
-    if ShipLives == 0:
+    #Apartado de fin de juego
+    if (ShipLives <= 0):
         gameOver = fontType.render("Game Over",True,"White")
         screen.blit(gameOver,((screen.get_width() / 2)-60, screen.get_height() / 2))
+
+        restart = fontType2.render("Press Y for restart",True,"White")
+        screen.blit(restart,((screen.get_width() / 2)-70, (screen.get_height() / 2)+28))
+
+        if restartCondition():
+            ShipLives = 3
+            destroyed = False
+            points = 0
+            angle = [0]
+            gravity = [0,0]
+            player_pos = [screen.get_width() / 2, screen.get_height() / 2]
+            Ship1 = Ship(player_pos,angle,gravity)
+
+
+
+
+    pausePressed = pauseKey()
+
+    if (pausePressed != pauseCondition) and (pausePressed) and (ShipLives > 0):
+        
+        titleWrited = False
+        pauseCondition = True
+
+        while pauseCondition and running:
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            
+            exitGame(exit)
+            if exit[0] == True:
+                running = False
+
+            if (pausePressed==False)and pauseKey():
+                pauseCondition = False
+
+            pausePressed = pauseKey()
+
+            if titleWrited == False:
+                pauseTitle = fontType.render("Pause",True,"White")
+                screen.blit(pauseTitle,((screen.get_width() / 2)-40, screen.get_height() / 2))
+                pygame.display.flip()
+                titleWrited = True
+ 
+    pauseCondition = pausePressed
+
+
+
 
     #Screen Clean
     pygame.display.flip()
