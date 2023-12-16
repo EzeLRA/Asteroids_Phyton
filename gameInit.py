@@ -1,6 +1,6 @@
 import random
 import pygame
-from classes import Ship,Asteroid,Bullet
+from classes import *
 from functions import *
 
 
@@ -29,7 +29,17 @@ pauseCondition = False
 fontType = pygame.font.Font("Resources/Font/pixelmix.ttf",18)
 fontType2 = pygame.font.Font("Resources/Font/pixelmix.ttf",11)
 fontType3 = pygame.font.Font("Resources/Font/pixelmix.ttf",30)
-
+actualLevel = 1
+#Time Played
+seg = 0
+mins = 0 
+hour = 0
+#Parameters for miliseconds:
+tmS = [0,0,0]
+tempMili = 100
+mili = [0]
+beforeTime = [0]
+variation=[0]
 
 #Player Data:
 angle = [0]
@@ -118,6 +128,15 @@ while running:
     screen.fill("black")
 
     #Escenary
+    if delayMiliSeconds(beforeTime,mili,variation,tmS,1000) and not(destroyed):
+        seg += 1
+
+    if seg>59:
+        seg = 0
+        mins += 1
+    if mins>59:
+        mins = 0
+        hour += 1
     
 
     #Pause condition
@@ -199,6 +218,7 @@ while running:
     
     #Recarga de asteroides
     if not(astCant):
+        actualLevel += 1
         for i in range(5):
             Xpos1 = random.randrange(int((screen.get_width() / 2)+120),700,1)
             Ypos1 = random.randrange(int((screen.get_height() / 2)+120),700,1)
@@ -217,6 +237,12 @@ while running:
     lives = fontType.render("Lives: " + str(ShipLives),True,"White")
     screen.blit(lives,(20,45))
 
+    levelPlaying = fontType.render("Level: "+str(actualLevel),True,"White")
+    screen.blit(levelPlaying,(220,20))
+
+    timeStatus = fontType.render("Time: "+str(hour)+":"+str(mins)+":"+str(seg),True,"White")
+    screen.blit(timeStatus,(520,20))
+
     #Apartado de fin de juego
     if (ShipLives <= 0):
         gameOver = fontType.render("Game Over",True,"White")
@@ -226,6 +252,13 @@ while running:
         screen.blit(restart,((screen.get_width() / 2)-70, (screen.get_height() / 2)+28))
 
         if restartCondition():
+            #Level restart
+            actualLevel = 1
+            #Time
+            seg = 0
+            mins = 0
+            hour = 0
+            #Ship
             ShipLives = 3
             destroyed = False
             points = 0

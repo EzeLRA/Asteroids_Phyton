@@ -38,4 +38,31 @@ def pauseKey():
         return True
     else:
         return False
+
+
+def delayMiliSeconds(tA,ml1,v,tmS,temp):#Aproximation to Miliseconds in base to Ticks
+    actualTime = pygame.time.get_ticks()
+    sucess = False
+
+    if tA[0] != 0:
+        if actualTime > tA[0]:
+            v[0] = (actualTime - tA[0])/1000
+            ml1[0] += v[0]
+            mili2 = int(ml1[0]*1000)
+            #print(mili2)
+
+            if (tmS[0] <= temp):
+                tmS[2] = mili2
+
+            tmS[0] = tmS[2] - tmS[1]
+        
+            if tmS[0]>=temp:
+                #print("Pasaron ",temp," milisegundos")
+                tmS[0] = 0
+                tmS[1] = tmS[2]
+                sucess = True
+
+    tA[0] = actualTime
+
+    return sucess  
     

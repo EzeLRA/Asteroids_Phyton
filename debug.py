@@ -30,15 +30,15 @@ def delaySeconds(tS,aux,temp):
     return cumple
 
 def delayMiliSeconds(tA,ml1,v,tmS,temp):#Aproximation to Miliseconds in base to Ticks
-    tiempoActual = pygame.time.get_ticks()
-    cumple = False
+    actualTime = pygame.time.get_ticks()
+    sucess = False
 
     if tA[0] != 0:
-        if tiempoActual > tA[0]:
-            v[0] = (tiempoActual - tA[0])/1000
+        if actualTime > tA[0]:
+            v[0] = (actualTime - tA[0])/1000
             ml1[0] += v[0]
             mili2 = int(ml1[0]*1000)
-            print(mili2)
+            #print(mili2)
 
             if (tmS[0] <= temp):
                 tmS[2] = mili2
@@ -46,14 +46,15 @@ def delayMiliSeconds(tA,ml1,v,tmS,temp):#Aproximation to Miliseconds in base to 
             tmS[0] = tmS[2] - tmS[1]
         
             if tmS[0]>=temp:
-                print("Pasaron ",temp," milisegundos")
+                #print("Pasaron ",temp," milisegundos")
                 tmS[0] = 0
                 tmS[1] = tmS[2]
-                cumple = True
+                sucess = True
 
-    tA[0] = tiempoActual
+    tA[0] = actualTime
 
-    return cumple        
+    return sucess     
+
 
 
 
@@ -71,7 +72,14 @@ pygame.key.set_repeat(10)
 
 running = True
 
+#Bool estados
+cambio2 = False
 cambio = False
+
+#Datos de tiempo:
+seg = 0
+minu = 0
+horas = 0
 
 #Time in Seconds:
 tSeconds = [0,0,0]
@@ -97,12 +105,45 @@ while running:
     else:
         screen.fill("black")
     """
+
+
     
-    if delayMiliSeconds(tiempoAnterior,mili1,variacion,tmS,tempMili):
-        screen.fill("white")
-    else:
-        screen.fill("black")
+    if delayMiliSeconds(tiempoAnterior,mili1,variacion,tmS,1000):
+        seg += 1
+
+    if seg>59:
+        seg = 0
+        minu += 1
+    if minu>59:
+        minu = 0
+        horas += 1
+
+    print("Horas:",horas,"Minutos:",minu,"Segundos:",seg)
+
+
+
+
+    """ Temporizador de boton
+    keys = pygame.key.get_pressed()
+    pulso = keys[pygame.K_r]
+
+    if (pulso != cambio) and (pulso):
+            cambio2 = True
+
+    cambio = pulso
     
+    if cambio2:
+        if delayMiliSeconds(tiempoAnterior,mili1,variacion,tmS,2000):
+            screen.fill("black")
+            cambio2 = False
+            tmS = [0,0,0]
+            mili1 = [0]
+            tiempoAnterior = [0]
+            variacion=[0]
+        else:
+            screen.fill("white")
+    """
+
     pygame.display.flip()
     fpsClock.tick(fps)
 
