@@ -1,4 +1,5 @@
 import random
+from random import choice
 import pygame
 from classes import *
 from functions import *
@@ -26,9 +27,16 @@ dt = 0
 exit = [False]
 menuInicio = True
 pauseCondition = False
+#Fonts
 fontType = pygame.font.Font("Resources/Font/pixelmix.ttf",18)
 fontType2 = pygame.font.Font("Resources/Font/pixelmix.ttf",11)
 fontType3 = pygame.font.Font("Resources/Font/pixelmix.ttf",30)
+#Stages Ambient
+StagesSound = [pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient1.wav"),pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient2.wav"),pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient3.wav"),pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient4.wav")]
+Stage = 0
+#Explosion
+ExplosionSounds = [pygame.mixer.Sound("Resources/Sounds/colisions/explosion1.wav"),pygame.mixer.Sound("Resources/Sounds/colisions/explosion2.wav"),pygame.mixer.Sound("Resources/Sounds/colisions/explosion3.wav")]
+#Data
 actualLevel = 1
 #Time Played
 seg = 0
@@ -138,8 +146,25 @@ while running:
         mins = 0
         hour += 1
     
-
-    #Pause condition
+    #Avanze de las etapas de la partida
+    
+    if astCant:
+        if (len(astCant) > 15)and(Stage==0) :
+            pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient1.wav")
+            pygame.mixer.music.play(-1)
+            Stage += 1
+        elif (len(astCant) < 10)and(Stage==1) :
+            pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient2.wav")
+            pygame.mixer.music.play(-1)
+            Stage += 1
+        elif (len(astCant) < 5)and(Stage==2) :
+            pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient3.wav")
+            pygame.mixer.music.play(-1)
+            Stage += 1
+        elif (len(astCant) <= 2)and(Stage==3) :
+            pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient4.wav")
+            pygame.mixer.music.play(-1)
+            Stage += 1
 
     #Ship
     if destroyed == False:
@@ -155,6 +180,9 @@ while running:
                 destroyed = True
                 ShipLives -= 1
                 Ship1.shipExplosion(fragments)
+                #Explosion
+                ExplosionSound2 = choice(ExplosionSounds)
+                ExplosionSound2.play()
 
     #Desplazamiento de los fragmentos
     if fragments:
@@ -183,6 +211,7 @@ while running:
         astCant[i].Movements()
         astCant[i].escenaryLimit()
 
+
     #Bullets
     if bullets :
         for i in range(len(bullets)):
@@ -207,6 +236,12 @@ while running:
                         for i in range(5):
                             astCant.append(Asteroid(size2,[astCant[itm2].x,astCant[itm2].y],False))
                     astCant.pop(itm2)
+
+                    #Explosion sound
+                    ExplosionSound1 = choice(ExplosionSounds)
+                    ExplosionSound1.play()
+
+
                     pooped = True
                 else:
                     itm2 += 1    
@@ -216,8 +251,10 @@ while running:
             if pooped:
                 points += 1
     
+
     #Recarga de asteroides
     if not(astCant):
+        Stage = 0
         actualLevel += 1
         for i in range(5):
             Xpos1 = random.randrange(int((screen.get_width() / 2)+120),700,1)
@@ -245,6 +282,9 @@ while running:
 
     #Apartado de fin de juego
     if (ShipLives <= 0):
+
+        pygame.mixer.music.set_volume(0.0)
+
         gameOver = fontType.render("Game Over",True,"White")
         screen.blit(gameOver,((screen.get_width() / 2)-60, screen.get_height() / 2))
 
@@ -252,6 +292,9 @@ while running:
         screen.blit(restart,((screen.get_width() / 2)-70, (screen.get_height() / 2)+28))
 
         if restartCondition():
+            #Stage restart
+            Stage = 0
+            pygame.mixer.music.set_volume(1.0)
             #Level restart
             actualLevel = 1
             #Time
@@ -277,6 +320,8 @@ while running:
         titleWrited = False
         pauseCondition = True
 
+        pygame.mixer.music.set_volume(0.0)
+
         while pauseCondition and running:
 
             for event in pygame.event.get():
@@ -297,7 +342,9 @@ while running:
                 screen.blit(pauseTitle,((screen.get_width() / 2)-40, screen.get_height() / 2))
                 pygame.display.flip()
                 titleWrited = True
- 
+        
+        pygame.mixer.music.set_volume(1.0)
+
     pauseCondition = pausePressed
 
 

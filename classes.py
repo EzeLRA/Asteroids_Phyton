@@ -216,9 +216,12 @@ class Ship:
         keys = pygame.key.get_pressed()
         pulse = keys[pygame.K_SPACE] 
 
+        SoundShoot = pygame.mixer.Sound("Resources/Sounds/actions/shot.wav")
+
         if (pulse != shootButton[0]) and (pulse):
             
             bullets.append(Bullet(self.p1,self.angle[0]))
+            SoundShoot.play()
         
         shootButton[0] = pulse
 
