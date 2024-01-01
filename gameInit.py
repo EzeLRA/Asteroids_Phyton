@@ -31,6 +31,9 @@ pauseCondition = False
 fontType = pygame.font.Font("Resources/Font/pixelmix.ttf",18)
 fontType2 = pygame.font.Font("Resources/Font/pixelmix.ttf",11)
 fontType3 = pygame.font.Font("Resources/Font/pixelmix.ttf",30)
+#Ignition States:
+ignition = False
+
 #Stages Ambient
 StagesSound = [pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient1.wav"),pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient2.wav"),pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient3.wav"),pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient4.wav")]
 Stage = 0
@@ -146,8 +149,22 @@ while running:
         mins = 0
         hour += 1
     
-    #Avanze de las etapas de la partida
+    #Avanze de las etapas de la partida 
+
+    keys = pygame.key.get_pressed()
+    pulse = keys[pygame.K_w]
     
+    ignite = pygame.mixer.Sound("Resources/Sounds/actions/propultion.wav")
+
+    if (pulse != ignition) and (pulse):
+            
+        ignite.play(-1)
+
+    elif (pulse != ignition) and not(pulse):
+        pygame.mixer.stop()
+        
+    ignition = pulse
+
     if astCant:
         if (len(astCant) > 15)and(Stage==0) :
             pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient1.wav")

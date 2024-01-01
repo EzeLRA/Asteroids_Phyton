@@ -76,6 +76,7 @@ running = True
 cambio2 = False
 cambio = False
 
+
 #Datos de tiempo:
 seg = 0
 minu = 0
@@ -98,16 +99,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    
-    """
-    if delaySeconds(tSeconds,aux,temp):
-        screen.fill("white")
-    else:
-        screen.fill("black")
-    """
 
-
-    
     if delayMiliSeconds(tiempoAnterior,mili1,variacion,tmS,1000):
         seg += 1
 
@@ -121,28 +113,26 @@ while running:
     print("Horas:",horas,"Minutos:",minu,"Segundos:",seg)
 
 
+    if cambio2 == False:
+        pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient1.wav")
+        pygame.mixer.music.play(-1)
+        cambio2 = True
 
-
-    """ Temporizador de boton
     keys = pygame.key.get_pressed()
-    pulso = keys[pygame.K_r]
+    pulse = keys[pygame.K_SPACE] 
 
-    if (pulso != cambio) and (pulso):
-            cambio2 = True
+    SoundShoot = pygame.mixer.Sound("Resources/Sounds/actions/propultion.wav")
 
-    cambio = pulso
-    
-    if cambio2:
-        if delayMiliSeconds(tiempoAnterior,mili1,variacion,tmS,2000):
-            screen.fill("black")
-            cambio2 = False
-            tmS = [0,0,0]
-            mili1 = [0]
-            tiempoAnterior = [0]
-            variacion=[0]
-        else:
-            screen.fill("white")
-    """
+    if (pulse != cambio) and (pulse):
+            
+        SoundShoot.play(-1)
+
+    elif (pulse != cambio) and not(pulse):
+        pygame.mixer.Sound.stop(SoundShoot)
+        
+    cambio = pulse
+
+
 
     pygame.display.flip()
     fpsClock.tick(fps)
