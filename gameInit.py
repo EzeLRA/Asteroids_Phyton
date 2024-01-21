@@ -64,6 +64,10 @@ ShipLives = 3
 destroyed = False
 fragments = []
 
+#Score Menu:
+Menu1 = menuScores((screen.get_width() / 2),(screen.get_height() / 2)-150,screen)
+inserted = False
+
 #Bullets Data:
 bullets = []
 BulletImpact = False 
@@ -127,9 +131,10 @@ while menuInicio:
 while running:
     
     #Events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    if (ShipLives > 0):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
     exitGame(exit)
     if exit[0] == True:
@@ -303,12 +308,27 @@ while running:
         pygame.mixer.music.set_volume(0.0)
 
         gameOver = fontType.render("Game Over",True,"White")
-        screen.blit(gameOver,((screen.get_width() / 2)-60, screen.get_height() / 2))
+        screen.blit(gameOver,((screen.get_width() / 2)-60, (screen.get_height() / 2)-200))
 
-        restart = fontType2.render("Press Y for restart",True,"White")
-        screen.blit(restart,((screen.get_width() / 2)-70, (screen.get_height() / 2)+28))
+        if inserted == True:
+            restart = fontType2.render("Press Y for restart",True,"White")
+            screen.blit(restart,((screen.get_width() / 2)-70, (screen.get_height() / 2)-175))
 
-        if restartCondition():
+        #Apartado de apodo y puntajes
+        
+        Menu1.titleScore()
+        
+        if inserted == False:
+
+            Evento = pygame.event.get()
+
+            Menu1.insert(Evento)
+            if Menu1.exitInsert():
+                inserted=True
+            Menu1.usernameDisplay()
+
+
+        if restartCondition() and (inserted==True):
             #Stage restart
             Stage = 0
             pygame.mixer.music.set_volume(1.0)

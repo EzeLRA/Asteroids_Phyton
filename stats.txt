@@ -1,0 +1,5 @@
+USERNAME;POINTS;LEVEL
+Ezeleo;50;5
+ezeleo;400;5
+ezeleo;300;5
+ezeleo;200;5

@@ -1,7 +1,9 @@
 import pygame
+from pygame.locals import *
 import random
 import math
 from functions import Rotate
+import sys
 
 class Bullet:
     def __init__(self,coords,angle):
@@ -244,6 +246,55 @@ class Ship:
         fragments.append(Fragment(f4,f5,distMedia1,self.angle[0]))
         fragments.append(Fragment(f1a,f2,distMedia2,self.angle[0]))
         fragments.append(Fragment(f1b,f3,distMedia3,self.angle[0]))
+
+class menuScores:
+    def __init__(self,x,y,screen):
+        self.X = x
+        self.Y = y
+        self.Screen = screen
+        self.fontMenu = pygame.font.Font("Resources/Font/pixelmix.ttf", 15)
+        self.username = ""
+        self.cant = 0
+        self.caracteres = ['',]
+        self.max = 6
+
+    def titleScore(self):
+        img_letra = self.fontMenu.render("Insert your username:", True, "White")
+        self.Screen.blit(img_letra, (self.X-105, self.Y))
+
+    def usernameTitle(self):
+        img_letra = self.fontMenu.render("______", True, "White")
+        self.Screen.blit(img_letra, (self.X-35, self.Y+30))
+
+    def insert(self, Evento):
+        for action in Evento:
+            if action.type == pygame.QUIT:
+                sys.exit(0)
+            if action.type == KEYDOWN:
+                if action.key == K_ESCAPE:
+                    sys.exit(0)
+                elif action.key == K_BACKSPACE: #Borrado
+                    self.caracteres[0] = self.caracteres[0][0:-1]
+                    self.username = self.caracteres[0]
+                    self.cant -= 1
+                else:
+                    if (self.cant < self.max)and(action.key != K_RETURN):
+                        self.caracteres[0] = str(self.caracteres[0] + action.unicode)
+                        self.username = self.caracteres[0]
+                        self.cant += 1
+
+    def exitInsert(self):
+        keys = pygame.key.get_pressed()
+        if (keys[K_RETURN]) and (self.cant == self.max): #Enter
+            return True
+        else:
+            return False
+
+    def usernameDisplay(self):
+        img_letra = self.fontMenu.render(self.username, True, "White")
+        self.Screen.blit(img_letra, (self.X-35, self.Y+30))
+
+
 
 
         

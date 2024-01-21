@@ -1,140 +1,147 @@
-# Imports
-import sys
 import pygame
-import math
-from functions import Rotate
+from pygame.locals import *
+import sys
+
+class menu():
+    def __init__(self):
+        self.fuente = pygame.font.Font(None, 25)
+
+        self.distancia = 20
+        self.pos_x = 50
+        self.pos_y = 50
+
+        self.cursorIndice = 1
+        self.cursor_x = 50
+        self.cursor_y = 50
+
+    def cursorAbajo(evento):
+        for accion in evento:
+            if accion.type == KEYDOWN and accion.key == K_DOWN:
+                return True
+            else:
+                return False
+
+    def cursorArriba(evento):
+        for accion in evento:
+            if accion.type == KEYDOWN and accion.key == K_UP:
+                return True
+            else:
+                return False
+
+    def texto(self,superficie,evento):
+        superficie.fill((0, 0, 0))
+
+        if menu.cursorArriba(evento) and self.cursorIndice < 2:
+            self.cursorIndice += 1
+        if menu.cursorAbajo(evento) and self.cursorIndice > 1:
+            self.cursorIndice -= 1
+
+        cursorCarac = '-'
+        img_letra3 = self.fuente.render(cursorCarac, True, (200, 200, 200))
+        if self.cursorIndice == 1:
+            superficie.blit(img_letra3, (self.cursor_x-20, self.cursor_y))
+        if self.cursorIndice == 2:
+            superficie.blit(img_letra3, (self.cursor_x-20, self.cursor_y+20))
+
+        cad1 = 'Escribir'
+        img_letra = self.fuente.render(cad1, True, (200, 200, 200))
+        superficie.blit(img_letra, (self.pos_x, self.pos_y))
+
+        cad2 = 'Salir'
+        img_letra2 = self.fuente.render(cad2, True, (200, 200, 200))
+        superficie.blit(img_letra2, (self.pos_x, self.pos_y + 20))
 
 
 
-def delaySeconds(tS,aux,temp):
-    tiempoActual = int(pygame.time.get_ticks() / 1000)
-    cumple = False
+class Entrada():
+    def __init__(self):
+        self.lineas = 0
+        self.cant = 0
+        self.caracteres = [' ',]
+        self.fuente = pygame.font.Font(None, 25)
 
-    if aux[0] == tiempoActual:
-        t = aux[0] - 1
-        print("Segundo Actual:",t)
 
-        if (tS[0] <= temp):
-            tS[2] = t
+        self.distancia = 20
+        self.pos_x = 50
+        self.pos_y = 50
 
-        tS[0] = tS[2] - tS[1]
-        
-        if tS[0]>=temp:
-            print("Pasaron ",temp," segundos")
-            tS[0] = 0
-            tS[1] = tS[2]
-            cumple = True
 
-        aux[0] += 1
+    def teclas(self, evento, maxim):
+        for accion in evento:
+            #print('algo...')
+            if accion.type == KEYDOWN:
+                if accion.key == K_ESCAPE:
+                    sys.exit(0)
+                elif accion.key == K_BACKSPACE: #Borrado
+                    self.caracteres[0] = self.caracteres[0][0:-1]
+                    self.cant -= 1
+                else:
+                    if self.cant < maxim:
+                        self.caracteres[0] = str(self.caracteres[0] + accion.unicode)
+                        self.cant += 1
 
-    return cumple
+    def salirEscritura(self,evento):
+        for accion in evento:
+            if accion.type == KEYDOWN and accion.key == K_RETURN: #Enter
+                return True
+            else:
+                return False
 
-def delayMiliSeconds(tA,ml1,v,tmS,temp):#Aproximation to Miliseconds in base to Ticks
-    actualTime = pygame.time.get_ticks()
-    sucess = False
+    def sacarTexto(self):
+        return self.caracteres[0]
 
-    if tA[0] != 0:
-        if actualTime > tA[0]:
-            v[0] = (actualTime - tA[0])/1000
-            ml1[0] += v[0]
-            mili2 = int(ml1[0]*1000)
-            #print(mili2)
-
-            if (tmS[0] <= temp):
-                tmS[2] = mili2
-
-            tmS[0] = tmS[2] - tmS[1]
-        
-            if tmS[0]>=temp:
-                #print("Pasaron ",temp," milisegundos")
-                tmS[0] = 0
-                tmS[1] = tmS[2]
-                sucess = True
-
-    tA[0] = actualTime
-
-    return sucess     
+    def mensaje(self, superficie):
+        superficie.fill((0, 0, 0))
+        for self.lineas in range(len(self.caracteres)):
+            img_letra = self.fuente.render(self.caracteres[0], True, (200, 200, 200))
+            superficie.blit(img_letra, (self.pos_x, self.pos_y + self.distancia))
 
 
 
+def main():
+    
+    pygame.init()
+    pantalla = pygame.display.set_mode((700, 500))
+    pygame.display.set_caption('Escribir en pygame')
+    salir = False
 
-# Configuration
-pygame.init()
-fps = 60
-fpsClock = pygame.time.Clock()
-width, height = 640, 480
-screen = pygame.display.set_mode((width, height))
+    #parametros
+    escribir = False
+    cad = ''
+    maximo = 8
 
+    entrar_texto = Entrada()
 
-letra = pygame.font.Font("Resources/Font/pixelmix.ttf",42)
+    menuPri = menu()
 
-pygame.key.set_repeat(10)
+    while not salir:
+        eventos = pygame.event.get()
+        for accion in eventos:
+            if accion.type == pygame.QUIT:
+                salir = True
 
-running = True
+    
+        menuPri.texto(pantalla,eventos)
 
-#Bool estados
-cambio2 = False
-cambio = False
-
-
-#Datos de tiempo:
-seg = 0
-minu = 0
-horas = 0
-
-#Time in Seconds:
-tSeconds = [0,0,0]
-temp = 1 #temporizador para contar segundos
-aux = [1]
-
-#Time in Miliseconds
-tmS = [0,0,0]
-tempMili = 100
-mili1 = [0]
-tiempoAnterior = [0]
-variacion=[0]
-
-# Game loop.
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    if delayMiliSeconds(tiempoAnterior,mili1,variacion,tmS,1000):
-        seg += 1
-
-    if seg>59:
-        seg = 0
-        minu += 1
-    if minu>59:
-        minu = 0
-        horas += 1
-
-    print("Horas:",horas,"Minutos:",minu,"Segundos:",seg)
+        for accion in eventos:
+            if accion.type == KEYDOWN:
+                if accion.key == K_F1 and menuPri.cursorIndice == 1:
+                    escribir = True
+                if accion.key == K_F1 and menuPri.cursorIndice == 2:
+                    salir = True
 
 
-    if cambio2 == False:
-        pygame.mixer.music.load("Resources/Sounds/ambient/suspenseAmbient1.wav")
-        pygame.mixer.music.play(-1)
-        cambio2 = True
+        if escribir:
+            cad = entrar_texto.sacarTexto()
+            print(cad)
+            entrar_texto.mensaje(pantalla)
+            if entrar_texto.salirEscritura(eventos):
+                escribir = False
+                salir = True
+            entrar_texto.teclas(eventos,maximo)
+       
+    
 
-    keys = pygame.key.get_pressed()
-    pulse = keys[pygame.K_SPACE] 
+        pygame.display.update()
 
-    SoundShoot = pygame.mixer.Sound("Resources/Sounds/actions/propultion.wav")
-
-    if (pulse != cambio) and (pulse):
-            
-        SoundShoot.play(-1)
-
-    elif (pulse != cambio) and not(pulse):
-        pygame.mixer.Sound.stop(SoundShoot)
-        
-    cambio = pulse
-
-
-
-    pygame.display.flip()
-    fpsClock.tick(fps)
-
-pygame.quit()
+main()
