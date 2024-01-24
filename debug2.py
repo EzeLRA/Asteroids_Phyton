@@ -4,9 +4,9 @@ import sys
 usuario = "ezeleo"
 puntos = 200
 level = 5
+time = "45:45:4"
 
 encontro = False
-
 
 #Agregado de elemento (Desordenado)
 archivo = open("stats.txt",'r+')
@@ -18,12 +18,12 @@ while (linea != ""):
 	cad = cad.split(';')
 
 	#Busca en la lista si no hay datos que no coincidan
-	if (linea != "")and(cad[0]==usuario)and(cad[1]==str(puntos))and(cad[2]==str(level)):
+	if (linea != "")and(cad[0]==usuario)and(cad[1]==str(puntos))and(cad[2]==str(level)and(cad[3]==str(time))):
 		encontro = True
 
 	#Guarda en la ultima linea vacia si no existe el dato 
 	if (linea == "")and(encontro==False):
-		archivo.write("\n"+usuario+";"+str(puntos)+";"+str(level))
+		archivo.write("\n"+usuario+";"+str(puntos)+";"+str(level)+";"+str(time))
 		
 
 if (linea == ""):

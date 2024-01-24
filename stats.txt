@@ -1,5 +1,5 @@
-USERNAME;POINTS;LEVEL
-Ezeleo;50;5
-ezeleo;400;5
-ezeleo;300;5
-ezeleo;200;5
+USERNAME;POINTS;LEVEL;TIME
+
+ezeleo;3;1;0:0:5
+ezeleo;89;1;0:0:32
+ezeleo;666;6;0:7:47

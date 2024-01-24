@@ -316,19 +316,39 @@ while running:
 
         #Apartado de apodo y puntajes
         
-        Menu1.titleScore()
-        
         if inserted == False:
+            Menu1.titleScore()
 
             Evento = pygame.event.get()
 
             Menu1.insert(Evento)
             if Menu1.exitInsert():
                 inserted=True
+                #Username inserted:
+                timeFinished = str(hour)+":"+str(mins)+":"+str(seg)
+                Menu1.setNewStats(points,actualLevel,timeFinished)
+            
+            
             Menu1.usernameDisplay()
+
+        Menu1.displayList()
+
+
+
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        exitGame(exit)
+        if exit[0] == True:
+            running = False
 
 
         if restartCondition() and (inserted==True):
+            #Menu restart
+            inserted = False
             #Stage restart
             Stage = 0
             pygame.mixer.music.set_volume(1.0)

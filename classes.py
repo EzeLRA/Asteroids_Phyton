@@ -257,6 +257,7 @@ class menuScores:
         self.cant = 0
         self.caracteres = ['',]
         self.max = 6
+        self.vector = []
 
     def titleScore(self):
         img_letra = self.fontMenu.render("Insert your username:", True, "White")
@@ -293,6 +294,64 @@ class menuScores:
     def usernameDisplay(self):
         img_letra = self.fontMenu.render(self.username, True, "White")
         self.Screen.blit(img_letra, (self.X-35, self.Y+30))
+
+    def displayList(self):
+        #Lectura de archivo y ordenado
+
+        archivo = open("stats.txt",'r')
+
+        self.vector = []
+
+        linea = archivo.readline()
+        while(linea!=""):
+            linea = archivo.readline()
+            cad = linea.replace('\n','')
+            if cad != "":
+                self.vector.append([])
+                self.vector[len(self.vector)-1] = cad.split(';')
+
+        archivo.close()
+
+
+        #Ordenado de vector
+        for i in range(len(self.vector)):
+            for j in range(len(self.vector)-1):
+                if (int(self.vector[j][1]) < int(self.vector[j+1][1])):
+                    temp = self.vector[j]
+                    self.vector[j] = self.vector[j+1]
+                    self.vector[j+1] = temp
+
+        posY = 0
+
+        for i in range(0,len(self.vector)):
+            img_letra = self.fontMenu.render(str(self.vector[i][0])+" "+str(self.vector[i][1])+" "+str(self.vector[i][2])+" "+str(self.vector[i][3]), True, "White")
+            self.Screen.blit(img_letra, (self.X-35, (self.Y+70)+posY))
+            
+            posY += 17
+
+    def setNewStats(self,points,level,time):
+        encontro = False
+
+        #Agregado de elemento (Desordenado)
+        archivo = open("stats.txt",'r+')
+
+        linea = archivo.readline()
+        while (linea != ""):
+            linea = archivo.readline()
+            cad = linea.replace('\n','')
+            cad = cad.split(';')
+
+            #Busca en la lista si no hay datos que no coincidan
+            if (linea != "")and(cad[0]==self.username)and(cad[1]==str(points))and(cad[2]==str(level)and(cad[3]==str(time))):
+                encontro = True
+
+            #Guarda en la ultima linea vacia si no existe el dato 
+            if (linea == "")and(encontro==False):
+                archivo.write("\n"+self.username+";"+str(points)+";"+str(level)+";"+str(time))               
+
+        archivo.close()
+
+    
 
 
 
